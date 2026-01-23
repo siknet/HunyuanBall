@@ -1,4 +1,4 @@
-# 混元球 v1.01（本地翻译 API + WebUI）
+# 混元球 v1.02（本地翻译 API + WebUI）
 
 这是一个在 Windows 10/11 上本地运行的翻译服务（其他平台还在搓制中）：
 - 后端：`llama-server`（OpenAI 兼容 API）
