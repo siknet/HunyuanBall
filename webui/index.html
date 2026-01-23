@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HY-MT 翻译 WebUI</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    :root{
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e6e8ef;
+      --primary:#2563eb;
+      --primary2:#1d4ed8;
+      --shadow: 0 10px 30px rgba(15,23,42,.06);
+      --radius: 14px;
+    }
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 26px auto;
+      padding: 0 14px 26px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .logo{
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      box-shadow: 0 8px 18px rgba(37,99,235,.15);
+    }
+    .brand h1{
+      margin:0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .brand .sub{
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-h{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .status{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .dot{
+      width: 10px; height: 10px;
+      border-radius: 99px;
+      background: #cbd5e1;
+    }
+    .dot.ok{ background:#22c55e; }
+    .dot.bad{ background:#ef4444; }
+    .dot.wait{ background:#3b82f6; }
+    .status b{ color: var(--text); }
+
+    .content{
+      padding: 14px;
+    }
+
+    textarea, select{
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 12px !important;
+      border: 1px solid var(--line) !important;
+      background: #fff !important;
+      color: var(--text) !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    textarea{
+      min-height: 210px;
+      padding: 12px !important;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    select{
+      padding: 9px 10px !important;
+      background: #fff !important;
+    }
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 10px 0 6px;
+    }
+
+    .btnRow{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .btn{
+      border-radius: 12px;
+      padding: 9px 14px;
+      font-weight: 650;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      cursor:pointer;
+    }
+    .btn:hover{ background:#f8fafc; }
+    .btnPrimary{
+      border: 0;
+      background: var(--primary);
+      color: #fff;
+    }
+    .btnPrimary:hover{ background: var(--primary2); }
+
+    .swapRow{
+      display:flex;
+      justify-content:center;
+      margin: 6px 0 10px;
+    }
+    .swapBtn{
+      border-radius: 999px;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .swapBtn:hover{ background:#f8fafc; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 920px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    /* ✅ 跨两栏居中按钮 */
+    .translateRow{
+      display:flex;
+      justify-content:center;
+      margin-top: 12px;
+    }
+    .translateRow .btnPrimary{
+      min-width: 160px;
+    }
+
+    .outWrap{
+      position: relative;
+    }
+    .copyBtn{
+      position:absolute;
+      top: 8px;
+      right: 8px;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+    .meta{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toast{
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,23,42,.92);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>混元球 WebUI</h1>
+          <div class="sub">基于Tencent-HY-MT1.5-1.8B Hansah@V2ex 2026</div>
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn" id="btnCheck">检查连通性</button>
+        <button class="btn" id="btnClear">清空</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <div class="status">
+          <span class="dot wait" id="dot"></span>
+          <span id="status">未检测</span>
+          <span>· 延迟 <b id="lat">-</b></span>
+          <span>· 输出 <b id="outLen">-</b></span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ✅ 仍然整行居中的快速翻转（在两个输入框上面） -->
+        <div class="swapRow">
+          <button class="swapBtn" id="btnSwap" title="交换源语言与目标语言">⇄ 快速翻转</button>
+        </div>
+
+        <!-- ✅ 两栏输入/输出区 -->
+        <div class="grid2">
+          <div>
+            <label for="src">输入文本</label>
+            <textarea id="src" placeholder="把要翻译的文本粘贴到这里…">Freeway不是免费公路。
+Freedom Is never Free。
+但但丁和丁真真是2个人。</textarea>
+
+            <label for="srcLang">源语言</label>
+            <select id="srcLang">
+              <option value="auto" selected>自动识别</option>
+              <option value="English">English</option>
+              <option value="中文">中 文</option>
+              <option value="日本語">日本語</option>
+              <option value="한국어">韩 语</option>
+              <option value="Français">法 语</option>
+              <option value="Deutsch">德 语</option>
+              <option value="Español">西班牙语</option>
+              <option value="Русский">波兰语</option>
+              <option value="Português">葡萄牙语</option>
+            </select>
+
+            <div class="meta">
+              <span>输入字符：<span id="inChars">0</span></span>
+              <span>状态：<span id="reqState">idle</span></span>
+            </div>
+          </div>
+
+          <div class="outWrap">
+            <button class="btn copyBtn" id="btnCopy" title="复制译文">复制</button>
+
+            <label for="out">译文输出</label>
+            <textarea id="out" placeholder="译文会出现在这里…" readonly></textarea>
+
+            <label for="tgtLang">目标语言</label>
+            <select id="tgtLang">
+              <option value="中文" selected>中文</option>
+              <option value="English">English</option>
+              <option value="日本語">日本語</option>
+              <option value="한국어">韩 语</option>
+              <option value="Français">法 语</option>
+              <option value="Deutsch">德 语</option>
+              <option value="Español">西班牙语</option>
+              <option value="Русский">波兰语</option>
+              <option value="Português">葡萄牙语</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ✅ 重点：翻译按钮移到两栏下面，整行居中 -->
+        <div class="translateRow">
+          <button class="btn btnPrimary" id="btnGo">⭐翻译</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast" id="toast">已复制</div>
+  </div>
+
+<script>
+  // 固定 API Base URL（不给用户改）
+  const BASE_URL = "http://127.0.0.1:58088";
+
+  const $ = (id) => document.getElementById(id);
+  const el = {
+    dot: $("dot"),
+    status: $("status"),
+    lat: $("lat"),
+    outLen: $("outLen"),
+    btnCheck: $("btnCheck"),
+    btnClear: $("btnClear"),
+    btnSwap: $("btnSwap"),
+    btnGo: $("btnGo"),
+    btnCopy: $("btnCopy"),
+    src: $("src"),
+    out: $("out"),
+    srcLang: $("srcLang"),
+    tgtLang: $("tgtLang"),
+    inChars: $("inChars"),
+    reqState: $("reqState"),
+    toast: $("toast"),
+  };
+
+  function setStatus(type, text){
+    el.status.textContent = text;
+    el.dot.classList.remove("ok","bad","wait");
+    if(type==="ok") el.dot.classList.add("ok");
+    else if(type==="bad") el.dot.classList.add("bad");
+    else el.dot.classList.add("wait");
+  }
+
+  function toast(msg){
+    el.toast.textContent = msg;
+    el.toast.classList.add("show");
+    setTimeout(() => el.toast.classList.remove("show"), 1100);
+  }
+
+  function updateCounts(){
+    el.inChars.textContent = String((el.src.value || "").length);
+  }
+
+  async function check(){
+    setStatus("wait", "检测中...");
+    el.lat.textContent = "-";
+    try{
+      const t0 = performance.now();
+      const r = await fetch(BASE_URL + "/v1/models", { method:"GET" });
+      const t1 = performance.now();
+      el.lat.textContent = Math.round(t1 - t0) + " ms";
+      if(!r.ok){
+        setStatus("bad", "不可用（/v1/models 失败）");
+        return;
+      }
+      setStatus("ok", "可用");
+    }catch(e){
+      setStatus("bad", "连接失败");
+    }
+  }
+
+  function swapLang(){
+    const a = el.srcLang.value;
+    const b = el.tgtLang.value;
+    if(a === "auto"){
+      el.srcLang.value = b;
+      el.tgtLang.value = "中文";
+    } else {
+      el.srcLang.value = b === "auto" ? "auto" : b;
+      el.tgtLang.value = a;
+    }
+    toast("已翻转");
+  }
+
+  function buildPrompt(){
+    const srcLang = el.srcLang.value;
+    const tgtLang = el.tgtLang.value;
+    const text = (el.src.value || "").trim();
+    if(!text) return "";
+
+    if(srcLang === "auto"){
+      return `将以下文本翻译为${tgtLang}，只输出译文，不要额外解释：\n\n${text}`;
+    }
+    return `将以下${srcLang}文本翻译为${tgtLang}，只输出译文，不要额外解释：\n\n${text}`;
+  }
+
+  function setBusy(on){
+    el.btnGo.disabled = on;
+    el.btnCheck.disabled = on;
+    el.reqState.textContent = on ? "running" : "idle";
+    if(on) setStatus("wait", "翻译中…");
+  }
+
+  async function translate(){
+    const prompt = buildPrompt();
+    if(!prompt){
+      toast("请输入内容");
+      return;
+    }
+
+    const body = {
+      model: "local",
+      messages: [{ role:"user", content: prompt }],
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 512,
+      stream: false
+    };
+
+    el.out.value = "";
+    el.outLen.textContent = "-";
+
+    setBusy(true);
+    const t0 = performance.now();
+    try{
+      const resp = await fetch(BASE_URL + "/v1/chat/completions", {
+        method:"POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if(!resp.ok){
+        const j = await resp.json().catch(()=> ({}));
+        const msg = j?.error?.message || ("HTTP " + resp.status);
+        setStatus("bad", "错误");
+        el.out.value = "ERROR: " + msg;
+        return;
+      }
+
+      const j = await resp.json();
+      const text = (j?.choices?.[0]?.message?.content ?? "").trim();
+      el.out.value = text;
+      el.outLen.textContent = String(text.length);
+      setStatus("ok", "完成");
+    }catch(e){
+      setStatus("bad", "请求失败");
+      el.out.value = "ERROR: " + (e?.message || String(e));
+    }finally{
+      const t1 = performance.now();
+      el.lat.textContent = Math.round(t1 - t0) + " ms";
+      setBusy(false);
+    }
+  }
+
+  async function copyOut(){
+    const text = el.out.value || "";
+    if(!text.trim()){
+      toast("没内容可复制");
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      toast("已复制译文");
+    }catch{
+      el.out.focus();
+      el.out.select();
+      document.execCommand("copy");
+      toast("已复制译文");
+    }
+  }
+
+  el.btnCheck.addEventListener("click", check);
+  el.btnClear.addEventListener("click", () => {
+    el.src.value = "";
+    el.out.value = "";
+    updateCounts();
+    el.outLen.textContent = "-";
+    setStatus("wait", "未检测");
+    el.lat.textContent = "-";
+    toast("已清空");
+  });
+  el.btnSwap.addEventListener("click", swapLang);
+  el.btnGo.addEventListener("click", translate);
+  el.btnCopy.addEventListener("click", copyOut);
+  el.src.addEventListener("input", updateCounts);
+
+  updateCounts();
+</script>
+</body>
+</html>
