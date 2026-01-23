@@ -2,14 +2,11 @@
   "model_path": "models\\HY-MT1.5-1.8B-Q4_K_M.gguf",
   "host": "127.0.0.1",
   "port": 58088,
-
   "threads": 2,
   "threads_batch": 2,
   "ctx": 1024,
   "batch": 256,
-
-  "extra_args": ["--no-webui"],
-
+  "extra_args": [],
   "autostart": true,
   "open_webui_on_ready": true,
   "show_tips": true
